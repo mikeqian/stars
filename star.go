@@ -15,6 +15,7 @@ import (
 )
 
 var cookie string
+var message = make(chan int)
 
 type Config struct {
 	Cookie string
@@ -66,6 +67,8 @@ func insertIng(i int) {
 	body, _ := ioutil.ReadAll(resp.Body)
 
 	fmt.Println(string(body))
+
+	message <- 1
 }
 
 func deleteIng(ing string) {
@@ -109,12 +112,15 @@ func getconfig() {
 func main() {
 	getconfig()
 	for i := 1; i < 20; i++ {
-		insertIng(i)
+		go insertIng(i)
 		time.Sleep(10 * time.Minute)
 
+		done := <-message
+
+		log.Println(done)
 		ing := getLastIng()
 		if !strings.Contains(ing, "幸运闪") {
-			deleteIng(ing)
+			go deleteIng(ing)
 		}
 
 		time.Sleep(5 * time.Minute)

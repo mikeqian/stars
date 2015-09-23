@@ -14,7 +14,5 @@ func TestSubString(t *testing.T) {
 	fmt.Println(source[begin+l : begin+l+2])
 
 	fmt.Println(begin)
-	//result := SubString(source, begin+4, 2)
-	//	fmt.Printf("%s\n", result)
 	t.Log("pass")
 }
