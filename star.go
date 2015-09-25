@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/mikeqian/log"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -97,15 +96,11 @@ func deleteIng(ing string) {
 
 func getconfig() {
 	r, err := os.Open("config.json")
-	if err != nil {
-		log.Fatalln(err)
-	}
+	check(err)
 	decoder := json.NewDecoder(r)
 	var c Config
 	err = decoder.Decode(&c)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	check(err)
 	cookie = c.Cookie
 }
 
@@ -115,14 +110,20 @@ func main() {
 		go insertIng(i)
 		time.Sleep(10 * time.Minute)
 
-		done := <-message
+		<-message
 
-		log.Println(done)
 		ing := getLastIng()
 		if !strings.Contains(ing, "幸运闪") {
 			go deleteIng(ing)
 		}
 
 		time.Sleep(5 * time.Minute)
+	}
+}
+
+//panic error for file operation
+func check(e error) {
+	if e != nil {
+		panic(e)
 	}
 }
